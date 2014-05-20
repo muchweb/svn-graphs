@@ -12,14 +12,10 @@
 
 	program
 		.usage('[options] <working directory>')
-		.version('0.0.3')
+		.version('0.0.4')
 		.option('-j, --json', 'output JSON instead of creating an image')
 		.option('-i, --image [filename]', 'specify image file name')
 		.parse(process.argv);
-
-	console.log('program.args', program.args);
-	console.log('program.json', program.json);
-	console.log('program.image', program.image);
 
 	if (program.args.length > 0)
 		path = program.args[0];
