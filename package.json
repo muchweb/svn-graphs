@@ -1,0 +1,16 @@
+{
+  "name": "svn-graphs",
+  "description": "Create punchcard graph image from SVN working copy",
+  "version": "0.0.3",
+  "main": "index.js",
+  "dependencies": {
+    "canvas": "^1.1.3",
+    "commander": "^2.2.0",
+    "moment": "^2.6.0",
+    "q": "^1.0.1",
+    "svn-spawn": "^0.1.4"
+  },
+  "bin": {
+    "svn-graphs": "cli.js"
+  }
+}
