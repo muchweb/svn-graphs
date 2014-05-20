@@ -12,7 +12,7 @@
 
 	program
 		.usage('[options] <working directory>')
-		.version('0.0.4')
+		.version('0.0.5')
 		.option('-j, --json', 'output JSON instead of creating an image')
 		.option('-i, --image [filename]', 'specify image file name')
 		.parse(process.argv);
