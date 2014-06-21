@@ -1,7 +1,5 @@
-[![Dependency Status](https://gemnasium.com/muchweb/svn-graphs.svg)](https://gemnasium.com/muchweb/svn-graphs)
-[![NPM version](https://badge.fury.io/js/svn-graphs.svg)](http://badge.fury.io/js/svn-graphs)
+# svn-graphs [![Dependency Status](https://gemnasium.com/muchweb/svn-graphs.svg)](https://gemnasium.com/muchweb/svn-graphs) [![NPM version](https://badge.fury.io/js/svn-graphs.svg)](http://badge.fury.io/js/svn-graphs)
 
-# svn-graphs
 Create punchcard graph image from SVN working copy
 
 ## Installation
