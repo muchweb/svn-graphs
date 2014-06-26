@@ -12,6 +12,8 @@
 
 	exports.SVNGraphs = function () {
 		this.svn_client = null;
+		this.processed_log = null;
+		this.path = '';
 	};
 
 	exports.SVNGraphs.prototype.SVNConnect = function (path) {
@@ -24,7 +26,9 @@
 			    // password: 'password', // optional if authentication not required or is already saved
 			});
 
-			this.path = path;
+			if (typeof path !== 'undefined')
+				this.path = path;
+
 			this.svn_client = svn_client;
 
 			deferred.resolve(svn_client);
@@ -44,47 +48,23 @@
 		var deferred = Q.defer();
 		setImmediate(function () {
 
-			// console.log('Loading SVN log data...');
+			if (this.processed_log !== null)
+				deferred.resolve(this.processed_log);
+				
 			this.svn_client.getLog(function (err, data) {
 				if (err)
 					return deferred.reject(err);
 
-				deferred.resolve(data[0].map(function (item) {
+				this.processed_log = data[0].map(function (item) {
 					item.moment = moment(item.date);
 					return item;
-				}));
-			});
+				});
+
+				deferred.resolve(this.processed_log);
+			}.bind(this));
 
 		}.bind(this));
 		return deferred.promise;
-	};
-
-	exports.SVNGraphs.GetPunchcardDataFromProcessedLog = function (data) {
-		// console.log('Getting punchcard data...');
-
-		var punch_card = {},
-			max = 0;
-
-    	for (var j = 0; j < data.length; j++) {
-    		var day_of_week = data[j].moment.format('dddd'),
-    			hour = data[j].moment.format('ha');
-
-	    	if (typeof punch_card[day_of_week] === 'undefined')
-	    		punch_card[day_of_week] = {};
-
-	    	if (typeof punch_card[day_of_week][hour] === 'undefined')
-	    		punch_card[day_of_week][hour] = 0;
-
-	    	punch_card[day_of_week][hour]++;
-
-	    	if (punch_card[day_of_week][hour] > max)
-	    		max = punch_card[day_of_week][hour];
-    	}
-
-		return {
-			punch_card: punch_card,
-			max: max,
-		};
 	};
 
 	exports.SVNGraphs.prototype.GetPunchcardDataFromProcessedLog = function () {
@@ -92,7 +72,30 @@
 		setImmediate(function () {
 
 			this.GetProcessedLog().then(function (data) {
-				deferred.resolve(exports.SVNGraphs.GetPunchcardDataFromProcessedLog(data));
+
+				var punch_card = {},
+					max = 0;
+
+		    	for (var j = 0; j < data.length; j++) {
+		    		var day_of_week = data[j].moment.format('dddd'),
+		    			hour = data[j].moment.format('ha');
+
+			    	if (typeof punch_card[day_of_week] === 'undefined')
+			    		punch_card[day_of_week] = {};
+
+			    	if (typeof punch_card[day_of_week][hour] === 'undefined')
+			    		punch_card[day_of_week][hour] = 0;
+
+			    	punch_card[day_of_week][hour]++;
+
+			    	if (punch_card[day_of_week][hour] > max)
+			    		max = punch_card[day_of_week][hour];
+		    	}
+
+				deferred.resolve({
+					days: punch_card,
+					max: max,
+				});
 			});
 
 		}.bind(this));
@@ -106,18 +109,18 @@
 		var deferred = Q.defer();
 		setImmediate(function () {
 
-			// console.log('Rendering punchcard image...');
+			console.log('Rendering punchcard image...');
 			var Canvas = require('canvas'),
 				fs = require('fs'),
 				days = [
-						'Monday',
-						'Tuesday',
-						'Wednesday',
-						'Thursday',
-						'Friday',
-						'Saturday',
-						'Sunday',
-					],
+					'Monday',
+					'Tuesday',
+					'Wednesday',
+					'Thursday',
+					'Friday',
+					'Saturday',
+					'Sunday',
+				],
 				times = [
 					'12am',
 					'1am',
@@ -173,11 +176,11 @@
 			// Drawing circles
 			for (i = 0; i < days.length; i++)
 				for (j = 0; j < times.length; j++)
-					if (typeof data.punch_card !== 'undefined' &&
-						typeof data.punch_card[days[i]] !== 'undefined' &&
-						typeof data.punch_card[days[i]][times[j]] !== 'undefined') {
+					if (typeof data.days !== 'undefined' &&
+						typeof data.days[days[i]] !== 'undefined' &&
+						typeof data.days[days[i]][times[j]] !== 'undefined') {
 					      ctx.beginPath();
-					      ctx.arc(graph_padding + text_width.width + (j * step_x), graph_padding + (i * step_y), Math.round(data.punch_card[days[i]][times[j]] / data.max * 15), 0, 2 * Math.PI, false);
+					      ctx.arc(graph_padding + text_width.width + (j * step_x), graph_padding + (i * step_y), Math.round(data.days[days[i]][times[j]] / data.max * 15), 0, 2 * Math.PI, false);
 					      ctx.fillStyle = 'black';
 					      ctx.fill();
 					}
