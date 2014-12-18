@@ -15,9 +15,8 @@ svn-graphs
 ```
 this will create an image in current directory
 
-## Example
-![](https://raw.githubusercontent.com/muchweb/svn-graphs/master/example.png)
-
+## Example output
+![](./example.png)
 
 ## License
 
