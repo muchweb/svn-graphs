@@ -6,12 +6,13 @@ moment   = require 'moment'
 
 module.exports.SVNGraphs = class
 
-	constructor: ->
-		@svn_client = null
-		@processed_log = null
-		@path = ''
+	constructor: (options={})->
+		@[key] = value for key, value of options
+		@svn_client    ?= null
+		@processed_log ?= null
+		@logger        ?= console
 
-	@SVNConnect: (@path) ->
+	SVNConnect: (@path) ->
 		deferred = Q.defer()
 		setImmediate =>
 			@svn_client = new SVNSpawn
@@ -21,22 +22,28 @@ module.exports.SVNGraphs = class
 			deferred.resolve @svn_client
 		deferred.promise
 
-	@SavePunchcardImage: (path) ->
-		@GetPunchcardDataFromProcessedLog().then (data) ->
-			exports.SVNGraphs.RenderPunchcard.call this, data, path
+	SavePunchcardImage: (path) ->
+		@GetPunchcardDataFromProcessedLog().then (data) =>
+			@RenderPunchcard data, path
 
-	@GetProcessedLog: ->
+	GetProcessedLog: ->
 		deferred = Q.defer()
 		setImmediate =>
-			deferred.resolve @processed_log	if @processed_log isnt null
+			deferred.resolve @processed_log if @processed_log?
+			counter = 0
+			@logger.log "Receiving SVN log… This may take a while."
 			@svn_client.getLog (err, data) =>
-				@processed_log = data[0].map (item) ->
-					item.moment = moment(item.date)
+				@logger.log err is err?
+				@processed_log = data.map (item) =>
+					@logger.log "#{counter}/#{data.length} items processed…" if counter % 100 is 0
+					counter++
+					item.moment = moment item.date
 					item
+				@logger.log "#{counter}/#{data.length} items processed…"
 				deferred.resolve @processed_log
 		deferred.promise
 
-	@GetPunchcardDataFromProcessedLog: ->
+	GetPunchcardDataFromProcessedLog: ->
 		deferred = Q.defer()
 		setImmediate =>
 			@GetProcessedLog().then (data) ->
@@ -45,31 +52,25 @@ module.exports.SVNGraphs = class
 				j = 0
 
 				while j < data.length
-					day_of_week = data[j].moment.format('dddd')
-					hour = data[j].moment.format('ha')
-					punch_card[day_of_week] = {}	if typeof punch_card[day_of_week] is 'undefined'
-					punch_card[day_of_week][hour] = 0	if typeof punch_card[day_of_week][hour] is 'undefined'
+					day_of_week = data[j].moment.format 'dddd'
+					hour = data[j].moment.format 'ha'
+					punch_card[day_of_week] = {} unless punch_card[day_of_week]?
+					punch_card[day_of_week][hour] = 0 unless punch_card[day_of_week][?
 					punch_card[day_of_week][hour]++
-					max = punch_card[day_of_week][hour]	if punch_card[day_of_week][hour] > max
+					max = punch_card[day_of_week][hour] if punch_card[day_of_week][hour] > max
 					j++
 
+					days: punch_card
+					max:  max
 				deferred.resolve
 					days: punch_card
-					max: max
-
+					max:  max
 		deferred.promise
 
-	RenderPunchcard: (data, image_name) ->
-		image_name = 'punchcard.png'	if typeof image_name is 'undefined'
+	RenderPunchcard: (data, image_name='punchcard.png') ->
 		deferred = Q.defer()
-
-		# Drawing days of week
-
-		# Drawing times
-
-		# Drawing circles
 		setImmediate =>
-			console.log 'Rendering punchcard image...'
+			@logger.log 'Rendering punchcard image...'
 			Canvas = require 'canvas'
 			fs     = require 'fs'
 			days = [
@@ -140,14 +141,14 @@ module.exports.SVNGraphs = class
 						ctx.fill()
 					j++
 				i++
-			console.log 'Writing to ' + image_name + '...'
+			@logger.log 'Writing to ' + image_name + '...'
 			out = fs.createWriteStream(image_name)
 			stream = canvas.pngStream()
 			stream.on 'data', (chunk) ->
 				out.write chunk
 
-			stream.on 'end', ->
-				console.log 'Image saved.'
+			stream.on 'end', =>
+				@logger.log 'Image saved.'
 				deferred.resolve 'Image saved.'
 
 		deferred.promise

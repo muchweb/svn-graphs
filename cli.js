@@ -7,7 +7,7 @@
 	'use strict';
 
 	var program = require('commander'),
-		SVNGraphs = require('lib/SVNGraphs.js').SVNGraphs,
+		SVNGraphs = require('./lib/SVNGraphs.js').SVNGraphs,
 		path = process.cwd(),
 		package_json = require('./package.json'),
 		svn_graphs = new SVNGraphs();
