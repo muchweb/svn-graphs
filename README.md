@@ -1,4 +1,4 @@
-# svn-graphs [![Dependency Status](https://gemnasium.com/muchweb/svn-graphs.svg)](https://gemnasium.com/muchweb/svn-graphs) [![NPM version](https://badge.fury.io/js/svn-graphs.svg)](http://badge.fury.io/js/svn-graphs) ![License: GPLv3+](http://img.shields.io/badge/license-GPLv3%2B-brightgreen.svg)
+# SVN Graphs [![Dependency Status](https://gemnasium.com/muchweb/svn-graphs.svg)](https://gemnasium.com/muchweb/svn-graphs) [![NPM version](https://badge.fury.io/js/svn-graphs.svg)](http://badge.fury.io/js/svn-graphs) ![License: GPLv3+](http://img.shields.io/badge/license-GPLv3%2B-brightgreen.svg)
 
 Create punchcard graph image from SVN working copy
 
