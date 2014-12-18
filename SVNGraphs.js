@@ -22,8 +22,8 @@
 
 			var svn_client = new SVNSpawn({
 				cwd: path,
-				// username: 'username', // optional if authentication not required or is already saved
-				// password: 'password', // optional if authentication not required or is already saved
+				// username: 'username', // optional if public repo or is already saved
+				// password: 'password', // optional if public repo or is already saved
 			});
 
 			if (typeof path !== 'undefined')
