@@ -3,15 +3,18 @@
 Create punchcard graph image from SVN working copy
 
 ## Installation
-```bash
-npm install -g svn-graphs
-```
+
 Unless previously installed you'll *need* **Cairo**. For system-specific installation view the [node-canvas Wiki](https://github.com/LearnBoost/node-canvas/wiki/_pages).
 
-## Usage
-cd to your SVN working copy
 ```bash
-svn-graphs
+$ npm install -g svn-graphs
+```
+
+## Usage
+Navigate to your SVN working copy
+
+```bash
+$ svn-graphs
 ```
 this will create an image in current directory
 
