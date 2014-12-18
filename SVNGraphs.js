@@ -21,9 +21,9 @@
 		setImmediate(function () {
 
 			var svn_client = new SVNSpawn({
-			    cwd: path,
-			    // username: 'username', // optional if authentication not required or is already saved
-			    // password: 'password', // optional if authentication not required or is already saved
+				cwd: path,
+				// username: 'username', // optional if authentication not required or is already saved
+				// password: 'password', // optional if authentication not required or is already saved
 			});
 
 			if (typeof path !== 'undefined')
@@ -50,7 +50,7 @@
 
 			if (this.processed_log !== null)
 				deferred.resolve(this.processed_log);
-				
+
 			this.svn_client.getLog(function (err, data) {
 				if (err)
 					return deferred.reject(err);
@@ -76,21 +76,21 @@
 				var punch_card = {},
 					max = 0;
 
-		    	for (var j = 0; j < data.length; j++) {
-		    		var day_of_week = data[j].moment.format('dddd'),
-		    			hour = data[j].moment.format('ha');
+				for (var j = 0; j < data.length; j++) {
+					var day_of_week = data[j].moment.format('dddd'),
+						hour = data[j].moment.format('ha');
 
-			    	if (typeof punch_card[day_of_week] === 'undefined')
-			    		punch_card[day_of_week] = {};
+					if (typeof punch_card[day_of_week] === 'undefined')
+						punch_card[day_of_week] = {};
 
-			    	if (typeof punch_card[day_of_week][hour] === 'undefined')
-			    		punch_card[day_of_week][hour] = 0;
+					if (typeof punch_card[day_of_week][hour] === 'undefined')
+						punch_card[day_of_week][hour] = 0;
 
-			    	punch_card[day_of_week][hour]++;
+					punch_card[day_of_week][hour]++;
 
-			    	if (punch_card[day_of_week][hour] > max)
-			    		max = punch_card[day_of_week][hour];
-		    	}
+					if (punch_card[day_of_week][hour] > max)
+						max = punch_card[day_of_week][hour];
+				}
 
 				deferred.resolve({
 					days: punch_card,
@@ -158,16 +158,16 @@
 			ctx.font = '12px';
 
 			var text_width = ctx.measureText('Wednesday');
-	        ctx.textBaseline = 'middle';
+			ctx.textBaseline = 'middle';
 
 			var step_x = (graph_width - (graph_padding * 2) - text_width.width) / 23;
 			var step_y = (graph_height - (graph_padding * 2)) / 7;
-			
+
 			// Drawing days of week
 			ctx.textAlign = 'left';
 			for (i = 0; i < days.length; i++)
 				ctx.fillText(days[i], graph_padding, graph_padding + (i * step_y));
-			
+
 			// Drawing times
 			ctx.textAlign = 'center';
 			for (j = 0; j < times.length; j++)
@@ -179,10 +179,10 @@
 					if (typeof data.days !== 'undefined' &&
 						typeof data.days[days[i]] !== 'undefined' &&
 						typeof data.days[days[i]][times[j]] !== 'undefined') {
-					      ctx.beginPath();
-					      ctx.arc(graph_padding + text_width.width + (j * step_x), graph_padding + (i * step_y), Math.round(data.days[days[i]][times[j]] / data.max * 15), 0, 2 * Math.PI, false);
-					      ctx.fillStyle = 'black';
-					      ctx.fill();
+						  ctx.beginPath();
+						  ctx.arc(graph_padding + text_width.width + (j * step_x), graph_padding + (i * step_y), Math.round(data.days[days[i]][times[j]] / data.max * 15), 0, 2 * Math.PI, false);
+						  ctx.fillStyle = 'black';
+						  ctx.fill();
 					}
 
 			console.log('Writing to ' + image_name + '...');
@@ -197,7 +197,7 @@
 				console.log('Image saved.');
 				deferred.resolve('Image saved.');
 			});
-		
+
 		}.bind(this));
 		return deferred.promise;
 	};
